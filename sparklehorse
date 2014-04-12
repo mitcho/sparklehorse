@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# 
+# Sparklehorse
+# 2014, Michael Yoshitaka Erlewine <mitcho@mitcho.com>
+# http://github.com/mitcho/sparklehorse
+# License: MIT
+# 
+# A bash script which checks for software updates for Mac software using
+# Andy Matushak's Sparkle http://sparkle.andymatuschak.org/
+# 
+# Named after a band by Mark Linkous, RIP
+
+verbose=false
+root='/Applications/'
+icon=''
+
+while getopts r:v option; do
+	case $option in
+		v) verbose=true; icon="⚡️ ";;
+		r) root=${OPTARG};;
+		?) 
+			echo 'Usage: sparklehorse [-v] [-r directory]'
+			exit;;
+	esac
+done
+
+echo "🌟 🐴 "
+
+[ $verbose = true ] && echo "verbose mode";
+
+# for file in $(find "${root}" -name 'Info.plist')
+locate /Info.plist | grep "$root" | while IFS= read -r file;
+do
+	if [ ! -f "$file" ]; then
+		continue
+	fi
+	if ! grep -q SUFeedURL "$file"; then
+		continue
+	fi
+	
+	feed=$(defaults read "$file" SUFeedURL)
+	version=$(defaults read "$file" CFBundleVersion)
+		
+	curl -s -m 5 "$feed" > /tmp/feed.xml # max time 5s
+	latest=$(grep sparkle:version /tmp/feed.xml | head -n 1 | sed 's/^.*sparkle:version="\([^"]*\)".*$/\1/')
+	
+	if [ $verbose = true ]; then
+		echo "PLIST:   ${file}"
+		echo "CURRENT: ${version}"
+		echo "FEED:    ${feed}"
+		echo "LATEST:  ${latest}"
+	fi
+	
+	if [[ "$latest" != "" && "$version" != "$latest" ]]; then
+		echo "${icon}${file%/Contents/Info.plist} ${version} -> ${latest}"
+	fi
+	
+	[ $verbose = true ] && echo;
+done
