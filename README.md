@@ -1,11 +1,17 @@
 sparklehorse
 ============
 
-A bash script which checks for software updates for Mac software using Andy Matushak's [Sparkle](http://sparkle.andymatuschak.org/). Named after [a band by Mark Linkous](http://en.wikipedia.org/wiki/Sparklehorse), RIP.
+A bash script which checks for software updates for Mac software using Andy Matushak's [Sparkle](http://sparkle.andymatuschak.org/). Maybe in the future it'll also try to
+update the apps too. Pull requests welcome.
+
+Named after [a band by Mark Linkous](http://en.wikipedia.org/wiki/Sparklehorse), RIP.
 
 ## Usage
 
-`./sparklehorse`
+	./sparklehorse
+
+Options: `-v` for verbose, `-r [directory]` to specify a root directory other than
+`/Applications/`.
 
 ## The MIT License (MIT)
 
